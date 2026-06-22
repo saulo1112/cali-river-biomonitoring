@@ -1,0 +1,14 @@
+# Core data handling
+pandas
+numpy
+openpyxl          # engine required by pandas.read_excel for .xlsx files
+
+# Plotting
+matplotlib
+seaborn
+
+# Modelling
+scikit-fuzzy      # fuzzy logic control systems (skfuzzy)
+scikit-learn      # logistic regression, decision trees, metrics, LOOCV
+statsmodels       # binomial / negative binomial GLMs, AIC selection
+scipy             # Spearman rank correlation

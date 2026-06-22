@@ -1,0 +1,20 @@
+# Serialized fuzzy rule bases
+*.pkl
+
+# Raw / intermediate data (place locally in data/, not version-controlled)
+*.xlsx
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+
+# OS
+.DS_Store
+
