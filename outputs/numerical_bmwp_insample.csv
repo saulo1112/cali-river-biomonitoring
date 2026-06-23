@@ -1,0 +1,2 @@
+model,validation,n,mae,rmse,r2,rs,p_value
+Fuzzy original,In-sample,14,9.83,12.29,0.842,0.827,0.000265

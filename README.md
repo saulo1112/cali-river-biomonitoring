@@ -45,13 +45,19 @@ physicochemical measurements.
 
 | Notebook | Technique | Target | Validation |
 |----------|-----------|--------|------------|
-| `01_fuzzy_logic/01a_fuzzy_BMWP` | Fuzzy logic (scikit-fuzzy) | BMWP class | In-sample |
-| `01_fuzzy_logic/01b_fuzzy_Perlidae` | Fuzzy logic | Perlidae presence | In-sample |
-| `01_fuzzy_logic/01c_fuzzy_Helicopsychidae` | Fuzzy logic | Helicopsychidae presence | In-sample |
-| `02_logistic_regression` | Logistic regression (statsmodels / scikit-learn) | Perlidae & Helicopsychidae | LOOCV |
-| `03_classification_trees` | Decision trees (scikit-learn) | Perlidae & Helicopsychidae | Train/test split + StratifiedKFold |
-| `04_negative_binomial` | Negative binomial GLM (statsmodels) | BMWP | LOOCV |
-| `05_bmwp_simulation` | Spearman rank correlation (scipy) | BMWP (fuzzy predictions) | External rank comparison |
+| `01_fuzzy_logic/01a_fuzzy_BMWP` | Fuzzy logic (original, in-sample) | BMWP class | In-sample* |
+| `01_fuzzy_logic/01b_fuzzy_Perlidae` | Fuzzy logic (original, in-sample) | Perlidae presence | In-sample* |
+| `01_fuzzy_logic/01c_fuzzy_Helicopsychidae` | Fuzzy logic (original, in-sample) | Helicopsychidae presence | In-sample* |
+| `01_fuzzy_logic/01d_fuzzy_LOOCV` | Fuzzy logic LOOCV baseline | All three targets | LOOCV (original rules) |
+| `01_fuzzy_logic/01e_fuzzy_redesign_comparison` | Fuzzy redesign: 8 approaches compared | All three targets | LOOCV |
+| **`01_fuzzy_logic/01f_fuzzy_final`** | **Fuzzy logic (redesigned) — FINAL** | **All three targets** | **LOOCV** |
+| `02_logistic_regression` | Logistic regression | Perlidae & Helicopsychidae | LOOCV |
+| **`03_classification_trees/03b_classification_trees_LOOCV`** | **Classification trees — FINAL** | **Perlidae & Helicopsychidae** | **LOOCV** |
+| `04_negative_binomial` | Negative binomial GLM | BMWP | LOOCV |
+| `05_bmwp_simulation` | Spearman correlation | BMWP | In-sample + LOOCV comparison |
+
+*In-sample: performance metrics reflect internal fit only — not evidence
+of out-of-sample generalisation. See 01f for the publication-ready results.
 
 Key modelling choices, faithfully kept from the original work:
 
@@ -69,12 +75,19 @@ Key modelling choices, faithfully kept from the original work:
 
 ## Limitations
 
-- **In-sample fuzzy evaluation.** The fuzzy logic rule bases are derived from the
-  same observations later used to evaluate them. The reported performance metrics
-  (CCI, Kappa, sensitivity, specificity, AUC) therefore reflect **in-sample fit**
-  and must **not** be read as evidence of out-of-sample generalisation. A proper
-  cross-validated assessment of the fuzzy models is left as future work; each fuzzy
-  notebook restates this explicitly in its Limitations section.
+- **In-sample fuzzy evaluation (original notebooks 01a–01c).** The original fuzzy
+  rule bases are derived from the same observations later used to evaluate them, so
+  their metrics reflect **in-sample fit** and must **not** be read as evidence of
+  out-of-sample generalisation. The redesigned system (`01f_fuzzy_final`) addresses
+  this with a leakage-reduced LOOCV evaluation and supersedes the original notebooks
+  for the publication results.
+- **Residual FCM leakage.** In the redesigned fuzzy system (01f),
+  Fuzzy C-Means parameters were estimated on the full dataset prior
+  to LOOCV. The inference rules are genuinely independent per fold,
+  but the membership function boundaries carry a residual dependency
+  on the complete dataset. This follows established practice in
+  data-driven fuzzy modelling and represents a substantially reduced
+  dependency compared to the original implementation.
 - **Very small sample size** (n ≈ 14–18). With so few observations, every metric
   has wide uncertainty, single observations can dominate a class (e.g. only one
   observation in the BMWP *Buena* class), and complex models cannot be expected to

@@ -1,0 +1,2 @@
+model,validation,n,mae,rmse,r2,rs,p_value
+NBR,LOOCV,18,27.43,30.18,0.063,0.344,0.1626
