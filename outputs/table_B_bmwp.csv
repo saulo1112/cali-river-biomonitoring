@@ -1,0 +1,4 @@
+target,technique,validation,n,precision,recall,f1,accuracy,kappa
+BMWP,Fuzzy logic (redesigned),LOOCV,18,0.31,0.317,0.308,0.556,0.345
+BMWP,Negative binomial reg.,LOOCV,18,0.149,0.2,0.171,0.389,0.062
+BMWP,Fuzzy logic (original),In-sample*,14,0.778,0.8,0.788,0.929,0.878

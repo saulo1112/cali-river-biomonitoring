@@ -1,0 +1,2 @@
+target,technique,validation,n,precision,recall,f1,accuracy,kappa
+BMWP,Negative binomial reg.,LOOCV,18,0.149,0.2,0.171,0.389,0.062

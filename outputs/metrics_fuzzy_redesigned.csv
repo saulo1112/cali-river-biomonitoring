@@ -1,0 +1,4 @@
+target,technique,validation,n,precision,recall,f1,accuracy,kappa
+BMWP,Fuzzy logic (redesigned),LOOCV,18,0.31,0.317,0.308,0.556,0.345
+Perlidae,Fuzzy logic (redesigned),LOOCV,18,0.833,0.833,0.8,0.778,0.586
+Helicopsychidae,Fuzzy logic (redesigned),LOOCV,18,0.617,0.633,0.582,0.611,0.192

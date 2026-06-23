@@ -1,0 +1,3 @@
+system,evaluation,n,rs,p_value
+Fuzzy logic (original),In-sample,14,0.827,0.000265
+Fuzzy logic (redesigned),LOOCV,17,0.533,0.0274482629834114
