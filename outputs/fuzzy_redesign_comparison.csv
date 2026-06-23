@@ -1,0 +1,32 @@
+Approach,Description,Model,Precision,Recall,F1,Accuracy,Kappa,Failed,Leakage
+Baseline,Original in-sample,BMWP,0.778,0.8,0.788,0.929,0.878,0/14,YES
+LOOCV-orig,"Auto rules, 5 pred",BMWP,0.133,0.1,0.114,0.222,0.077,11/18,partial
+E,FCM MF + 3 predictors,BMWP,0.31,0.317,0.308,0.556,0.345,1/18,NO
+D,FCM MF + 2 predictors,BMWP,0.173,0.25,0.204,0.5,0.21,0/18,NO
+A,Original MF + 2 predictors,BMWP,0.194,0.242,0.214,0.444,0.163,1/18,NO
+C,FCM MF + 5 predictors,BMWP,0.145,0.2,0.168,0.444,0.217,5/18,NO
+G,Literature MF + 2 predictors,BMWP,0.114,0.2,0.145,0.444,0.104,1/18,NO
+B,Original MF + 3 predictors,BMWP,0.2,0.217,0.207,0.389,0.195,5/18,NO
+F,Literature MF + 5 predictors,BMWP,0.125,0.125,0.125,0.278,0.082,7/18,NO
+H,Per-fold data-driven MF + 5 predictors,BMWP,0.1,0.075,0.086,0.167,-0.034,7/18,NO
+Baseline,Original in-sample,Perlidae,0.929,0.938,0.928,0.929,0.857,0/14,YES
+LOOCV-orig,"Auto rules, 5 pred",Perlidae,0.55,0.292,0.344,0.222,0.067,11/18,partial
+E,FCM MF + 3 predictors,Perlidae,0.833,0.833,0.8,0.778,0.586,1/18,NO
+A,Original MF + 2 predictors,Perlidae,0.742,0.708,0.725,0.722,0.423,1/18,NO
+D,FCM MF + 2 predictors,Perlidae,0.8,0.792,0.743,0.722,0.5,1/18,NO
+B,Original MF + 3 predictors,Perlidae,0.875,0.708,0.723,0.611,0.417,5/18,NO
+G,Literature MF + 2 predictors,Perlidae,0.3,0.375,0.333,0.5,-0.174,2/18,NO
+H,Per-fold data-driven MF + 5 predictors,Perlidae,0.733,0.5,0.569,0.444,0.211,7/18,NO
+C,FCM MF + 5 predictors,Perlidae,0.464,0.375,0.397,0.333,-0.029,5/18,NO
+F,Literature MF + 5 predictors,Perlidae,0.536,0.417,0.433,0.333,0.077,7/18,NO
+Baseline,Original in-sample,Helicopsychidae,0.875,0.955,0.905,0.929,0.811,0/14,YES
+LOOCV-orig,"Auto rules, 5 pred",Helicopsychidae,0.333,0.067,0.111,0.111,-0.079,11/18,partial
+G,Literature MF + 2 predictors,Helicopsychidae,0.4,0.4,0.4,0.667,-0.2,0/18,NO
+A,Original MF + 2 predictors,Helicopsychidae,0.617,0.633,0.582,0.611,0.192,2/18,NO
+A1,Original MF + 1 predictor (DBO5),Helicopsychidae,0.625,0.667,0.45,0.444,0.155,1/18,NO
+B,Original MF + 3 predictors,Helicopsychidae,0.4,0.267,0.32,0.444,-0.091,5/18,NO
+D,FCM MF + 2 predictors,Helicopsychidae,0.519,0.533,0.416,0.444,0.032,0/18,NO
+E,FCM MF + 3 predictors,Helicopsychidae,0.389,0.233,0.292,0.389,-0.2,1/18,NO
+H,Per-fold data-driven MF + 5 predictors,Helicopsychidae,0.389,0.233,0.292,0.389,-0.082,7/18,NO
+F,Literature MF + 5 predictors,Helicopsychidae,0.357,0.167,0.227,0.278,-0.13,7/18,NO
+C,FCM MF + 5 predictors,Helicopsychidae,0.286,0.133,0.182,0.222,-0.254,5/18,NO

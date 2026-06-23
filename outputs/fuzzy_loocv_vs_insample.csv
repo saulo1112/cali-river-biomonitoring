@@ -1,0 +1,7 @@
+Model,Evaluation,n,Precision,Recall,F1,Accuracy,Kappa,Failed folds
+BMWP,In-sample,14,0.778,0.8,0.788,0.929,0.878,0/14
+BMWP,LOOCV,18,0.133,0.1,0.114,0.222,0.077,11/18
+Perlidae,In-sample,14,0.929,0.938,0.928,0.929,0.857,0/14
+Perlidae,LOOCV,18,0.55,0.292,0.344,0.222,0.067,11/18
+Helicopsychidae,In-sample,14,0.875,0.955,0.905,0.929,0.811,0/14
+Helicopsychidae,LOOCV,18,0.333,0.067,0.111,0.111,-0.079,11/18
