@@ -1,0 +1,3 @@
+model,target,selection_criterion,validation,accuracy,kappa,mae,rmse,r2,spearman_rs,modal_predictors,predictor_stability
+ε-SVR,BMWP,AIC,Nested LOOCV,0.556,0.258,23.71,31.6,-0.028,0.43,Dureza,14/18
+ε-SVR,BMWP,Spearman,Nested LOOCV,0.444,0.13,29.75,33.14,-0.131,0.086,DBO5+Dureza+Turbiedad,12/18

@@ -1,0 +1,5 @@
+model,target,selection_criterion,validation,accuracy,kappa,mae,rmse,r2,spearman_rs,modal_predictors,predictor_stability
+Logistic,Perlidae,AIC,Nested LOOCV,0.556,0.2,,,,,DBO5,16/18
+Logistic,Perlidae,Spearman,Nested LOOCV,0.611,0.276,,,,,DBO5+Dureza,16/18
+Logistic,Helicopsychidae,AIC,Nested LOOCV,0.611,0.276,,,,,Caudal,10/18
+Logistic,Helicopsychidae,Spearman,Nested LOOCV,0.667,0.217,,,,,Caudal+DBO5,17/18
