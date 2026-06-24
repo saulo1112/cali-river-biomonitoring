@@ -1,3 +1,3 @@
-target,technique,validation,n,precision,recall,f1,accuracy,kappa,modal_predictors,predictor_stability
-Perlidae,Logistic regression,Nested LOOCV,18,0.625,0.625,0.556,0.556,0.2,DBO5,16/18
-Helicopsychidae,Logistic regression,Nested LOOCV,18,0.65,0.767,0.579,0.611,0.276,Caudal,10/18
+target,technique,selection,validation,n,k,precision,recall,f1,accuracy,kappa,modal_predictors,predictor_stability
+Perlidae,Logistic regression,Spearman top-3,Nested LOOCV,18,3,0.773,0.792,0.721,0.722,0.483,DBO5+Dureza+Turbiedad,18/18
+Helicopsychidae,Logistic regression,Spearman top-1,Nested LOOCV,18,1,0.556,0.6,0.5,0.556,0.111,Caudal,17/18
