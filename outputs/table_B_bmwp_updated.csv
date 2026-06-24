@@ -1,0 +1,4 @@
+target,technique,validation,n,precision,recall,f1,accuracy,kappa
+BMWP,Fuzzy logic (redesigned),Nested LOOCV,18,0.133,0.2,0.16,0.444,0.163
+BMWP,ε-SVR,Nested LOOCV,18,0.307,0.3,0.272,0.556,0.258
+BMWP,Negative binomial reg.,Nested LOOCV,18,0.152,0.2,0.166,0.389,0.0

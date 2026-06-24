@@ -1,0 +1,4 @@
+target,technique,validation,n,precision,recall,f1,accuracy,kappa,failed_folds,modal_predictors,predictor_stability
+BMWP,Fuzzy logic (redesigned),Nested LOOCV,18,0.133,0.2,0.16,0.444,0.163,2,Conductividad+SDT+Turbiedad,7/18
+Perlidae,Fuzzy logic (redesigned),Nested LOOCV,18,0.833,0.792,0.768,0.722,0.516,2,DBO5+SDT+Turbiedad,12/18
+Helicopsychidae,Fuzzy logic (redesigned),Nested LOOCV,18,0.554,0.567,0.557,0.722,0.118,0,DBO5+SDT,11/18

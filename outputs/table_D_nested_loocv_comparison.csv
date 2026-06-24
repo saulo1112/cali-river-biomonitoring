@@ -1,0 +1,8 @@
+model,target,std_kappa,nested_kappa,predictor_stability,modal_predictors,difference
+Fuzzy redesigned,BMWP,0.345,0.163,7/18,Conductividad+SDT+Turbiedad,-0.182
+Fuzzy redesigned,Perlidae,0.586,0.516,12/18,DBO5+SDT+Turbiedad,-0.07
+Fuzzy redesigned,Helicopsychidae,0.192,0.118,11/18,DBO5+SDT,-0.074
+Logistic regression,Perlidae,0.323,0.2,16/18,DBO5,-0.123
+Logistic regression,Helicopsychidae,0.143,0.276,10/18,Caudal,0.133
+NBR,BMWP,0.062,0.0,14/18,Dureza,-0.062
+ε-SVR,BMWP,,0.258,14/18,Dureza,

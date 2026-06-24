@@ -1,0 +1,4 @@
+model,validation,n,mae,rmse,r2,rs,p_value
+Fuzzy redesigned,Nested LOOCV,16,26.77,31.64,0.07,0.281,0.2916
+ε-SVR,Nested LOOCV,18,23.71,31.6,-0.028,0.43,0.0746
+NBR,Nested LOOCV,18,31.95,35.13,-0.27,-0.162,0.5207

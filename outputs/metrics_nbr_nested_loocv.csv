@@ -1,0 +1,2 @@
+target,technique,validation,n,precision,recall,f1,accuracy,kappa,mae,rmse,r2,rs,p_value,modal_predictors,predictor_stability
+BMWP,Negative binomial reg.,Nested LOOCV,18,0.152,0.2,0.166,0.389,0.0,31.95,35.13,-0.27,-0.162,0.5207,Dureza,14/18

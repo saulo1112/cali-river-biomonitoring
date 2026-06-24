@@ -1,0 +1,19 @@
+Fold,Selected predictors,C,epsilon,gamma
+1,Dureza,100,1.0,scale
+2,Dureza,100,1.0,scale
+3,Turbiedad,10,2.0,scale
+4,Dureza,100,1.0,scale
+5,Dureza,100,2.0,auto
+6,Dureza,100,1.0,scale
+7,Dureza,100,2.0,scale
+8,Dureza,100,1.0,scale
+9,Dureza,100,1.0,scale
+10,Magnesio,100,0.1,scale
+11,Dureza,100,0.1,scale
+12,Turbiedad,10,0.1,scale
+13,Dureza,100,0.1,scale
+14,Turbiedad,10,2.0,scale
+15,Dureza,100,2.0,scale
+16,Dureza,100,1.0,scale
+17,Dureza,100,1.0,auto
+18,Dureza,100,1.0,scale

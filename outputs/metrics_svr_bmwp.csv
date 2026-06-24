@@ -1,0 +1,2 @@
+target,technique,validation,n,precision,recall,f1,accuracy,kappa,modal_predictors,predictor_stability
+BMWP,ε-SVR,Nested LOOCV,18,0.307,0.3,0.272,0.556,0.258,Dureza,14/18

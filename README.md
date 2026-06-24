@@ -50,11 +50,12 @@ physicochemical measurements.
 | `01_fuzzy_logic/01c_fuzzy_Helicopsychidae` | Fuzzy logic (original, in-sample) | Helicopsychidae presence | In-sample* |
 | `01_fuzzy_logic/01d_fuzzy_LOOCV` | Fuzzy logic LOOCV baseline | All three targets | LOOCV (original rules) |
 | `01_fuzzy_logic/01e_fuzzy_redesign_comparison` | Fuzzy redesign: 8 approaches compared | All three targets | LOOCV |
-| **`01_fuzzy_logic/01f_fuzzy_final`** | **Fuzzy logic (redesigned) — FINAL** | **All three targets** | **LOOCV** |
-| `02_logistic_regression` | Logistic regression | Perlidae & Helicopsychidae | LOOCV |
+| **`01_fuzzy_logic/01f_fuzzy_final`** | **Fuzzy logic (redesigned) — FINAL** | **All three targets** | **Nested LOOCV** |
+| `02_logistic_regression` | Logistic regression | Perlidae & Helicopsychidae | Nested LOOCV |
 | **`03_classification_trees/03b_classification_trees_LOOCV`** | **Classification trees — FINAL** | **Perlidae & Helicopsychidae** | **LOOCV** |
-| `04_negative_binomial` | Negative binomial GLM | BMWP | LOOCV |
-| `05_bmwp_simulation` | Spearman correlation | BMWP | In-sample + LOOCV comparison |
+| `04_negative_binomial` | Negative binomial GLM | BMWP | Nested LOOCV |
+| **`05_svr_bmwp/05_svr_bmwp`** | **ε-SVR (RBF kernel)** | **BMWP** | **Nested LOOCV** |
+| `06_bmwp_simulation` | Spearman correlation | BMWP | In-sample + LOOCV comparison |
 
 *In-sample: performance metrics reflect internal fit only — not evidence
 of out-of-sample generalisation. See 01f for the publication-ready results.
@@ -81,13 +82,12 @@ Key modelling choices, faithfully kept from the original work:
   out-of-sample generalisation. The redesigned system (`01f_fuzzy_final`) addresses
   this with a leakage-reduced LOOCV evaluation and supersedes the original notebooks
   for the publication results.
-- **Residual FCM leakage.** In the redesigned fuzzy system (01f),
-  Fuzzy C-Means parameters were estimated on the full dataset prior
-  to LOOCV. The inference rules are genuinely independent per fold,
-  but the membership function boundaries carry a residual dependency
-  on the complete dataset. This follows established practice in
-  data-driven fuzzy modelling and represents a substantially reduced
-  dependency compared to the original implementation.
+- **Nested LOOCV implemented for AIC-based models.** Predictor selection
+  by AIC is now performed inside each LOOCV fold for fuzzy logic,
+  logistic regression, negative binomial regression, and ε-SVR. This
+  eliminates the residual leakage from full-dataset predictor selection
+  that was present in the earlier implementation. Classification trees
+  use all available predictors and are not affected.
 - **Very small sample size** (n ≈ 14–18). With so few observations, every metric
   has wide uncertainty, single observations can dominate a class (e.g. only one
   observation in the BMWP *Buena* class), and complex models cannot be expected to
@@ -112,8 +112,9 @@ cali-river-biomonitoring/
 │   ├── 02_logistic_regression/
 │   ├── 03_classification_trees/
 │   ├── 04_negative_binomial/
-│   └── 05_bmwp_simulation/
-├── outputs/              # generated artifacts (rule pickles, clean datasets)
+│   ├── 05_svr_bmwp/      # ε-SVR regression for BMWP (new)
+│   └── 06_bmwp_simulation/
+├── outputs/              # generated artifacts (CSVs, plots)
 └── figures/             # exported plots
 ```
 

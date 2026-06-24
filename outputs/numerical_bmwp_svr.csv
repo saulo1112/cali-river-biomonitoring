@@ -1,0 +1,2 @@
+model,validation,n,mae,rmse,r2,rs,p_value
+ε-SVR,Nested LOOCV,18,23.71,31.6,-0.028,0.43,0.0746
