@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Biomonitoreo Río Cali</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <!-- Ambient background: gradient + animated waves + floating bubbles -->
+  <div class="ambient" aria-hidden="true">
+    <div class="bubbles" id="bubbles"></div>
+    <svg class="waves" viewBox="0 0 1440 320" preserveAspectRatio="none">
+      <path class="wave wave-1" d="M0,160 C320,260 480,60 720,140 C960,220 1120,80 1440,160 L1440,320 L0,320 Z"></path>
+      <path class="wave wave-2" d="M0,200 C360,120 520,260 760,180 C1000,100 1180,240 1440,180 L1440,320 L0,320 Z"></path>
+      <path class="wave wave-3" d="M0,240 C300,300 600,180 840,240 C1080,300 1260,200 1440,250 L1440,320 L0,320 Z"></path>
+    </svg>
+  </div>
+
+  <main class="shell">
+    <header class="hero">
+      <div class="hero-badge">
+        <span class="dot"></span> Río Cali · Biomonitoreo
+      </div>
+      <h1>Predicción de calidad ecológica del agua</h1>
+      <p class="subtitle">
+        Modelos validados con Nested LOOCV para el índice BMWP/Col y la presencia de
+        macroinvertebrados bioindicadores.
+      </p>
+    </header>
+
+    <!-- Step 1 — choose the target/model -->
+    <section class="panel glass" aria-labelledby="step1">
+      <div class="panel-head">
+        <span class="step-num">1</span>
+        <h2 id="step1">¿Qué deseas predecir?</h2>
+      </div>
+      <div class="cards" id="modelCards"><!-- injected by JS --></div>
+    </section>
+
+    <!-- Step 2 — enter predictor values -->
+    <section class="panel glass hidden" id="inputPanel" aria-labelledby="step2">
+      <div class="panel-head">
+        <span class="step-num">2</span>
+        <h2 id="step2">Parámetros fisicoquímicos</h2>
+      </div>
+      <p class="panel-note" id="inputNote"></p>
+      <div class="inputs" id="inputFields"><!-- injected by JS --></div>
+      <button class="predict-btn" id="predictBtn">
+        <span>Predecir</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </section>
+
+    <!-- Step 3 — result -->
+    <section class="panel glass result hidden" id="resultPanel" aria-live="polite">
+      <div class="result-inner" id="resultInner"><!-- injected by JS --></div>
+    </section>
+
+    <footer class="foot">
+      <span id="modelStamp"></span>
+    </footer>
+  </main>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

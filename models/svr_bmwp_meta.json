@@ -1,0 +1,41 @@
+{
+  "model_type": "SVR",
+  "target": "BMWP",
+  "display_name": "ε-SVR — Índice BMWP/Col",
+  "predictors": [
+    "Dureza"
+  ],
+  "units": {
+    "Dureza": "mg/L CaCO₃"
+  },
+  "best_params": {
+    "svr__C": "100",
+    "svr__epsilon": "1.0",
+    "svr__gamma": "auto"
+  },
+  "ranges": {
+    "Dureza": [
+      35.5,
+      216.0
+    ]
+  },
+  "metrics": {
+    "kappa": 0.258,
+    "accuracy": 0.556,
+    "mae": 23.71,
+    "rmse": 31.6,
+    "r2": -0.028,
+    "rs": 0.43
+  },
+  "output": [
+    "numerical",
+    "class"
+  ],
+  "classes": {
+    "0-15": "Muy crítica",
+    "16-35": "Crítica",
+    "36-60": "Dudosa",
+    "61-100": "Aceptable",
+    "101-120": "Buena"
+  }
+}

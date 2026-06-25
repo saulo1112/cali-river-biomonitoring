@@ -1,0 +1,43 @@
+{
+  "model_type": "FuzzyMamdani",
+  "target": "Perlidae",
+  "display_name": "Lógica difusa (Fuzzy C means con tres predictores) — Perlidae",
+  "predictors": [
+    "Turbiedad",
+    "DBO5",
+    "SDT"
+  ],
+  "consequent_name": "Perlidae",
+  "threshold": 0.5,
+  "units": {
+    "Turbiedad": "NTU",
+    "DBO5": "mg/L",
+    "SDT": "mg/L"
+  },
+  "ranges": {
+    "Turbiedad": [
+      2.0,
+      88.1
+    ],
+    "DBO5": [
+      2.0,
+      35.0
+    ],
+    "SDT": [
+      50.0,
+      410.0
+    ]
+  },
+  "metrics": {
+    "kappa": 0.516,
+    "accuracy": 0.722,
+    "f1": 0.768
+  },
+  "output": [
+    "class"
+  ],
+  "classes": {
+    "0": "Ausencia",
+    "1": "Presencia"
+  }
+}

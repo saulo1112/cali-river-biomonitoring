@@ -1,0 +1,29 @@
+{
+  "model_type": "LogisticRegression",
+  "target": "Helicopsychidae",
+  "display_name": "Regresión logística — Helicopsychidae",
+  "predictors": [
+    "Caudal"
+  ],
+  "units": {
+    "Caudal": "m³/s"
+  },
+  "ranges": {
+    "Caudal": [
+      0.09,
+      4.39
+    ]
+  },
+  "metrics": {
+    "kappa": 0.111,
+    "accuracy": 0.556,
+    "f1": 0.5
+  },
+  "output": [
+    "class"
+  ],
+  "classes": {
+    "0": "Ausencia",
+    "1": "Presencia"
+  }
+}
