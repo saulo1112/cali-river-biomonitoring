@@ -85,8 +85,8 @@ function selectModel(name, card) {
 
   const meta = MODELS[name];
   el("inputNote").textContent =
-    `Modelo: ${meta.display_name}. Ajusta los ${meta.predictors.length} ` +
-    `predictor(es) y pulsa Predecir.`;
+    `Modelo: ${meta.display_name}. Ajusta los ` +
+    `predictores y pulsa "Predecir".`;
 
   const host = el("inputFields");
   host.innerHTML = "";
