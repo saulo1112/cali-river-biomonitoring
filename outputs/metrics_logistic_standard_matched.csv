@@ -1,0 +1,3 @@
+target,predictors,k,precision,recall,f1,accuracy,kappa
+Perlidae,DBO5+Dureza+Turbiedad,3,0.773,0.792,0.721,0.722,0.483
+Helicopsychidae,Caudal,1,0.65,0.767,0.579,0.611,0.276

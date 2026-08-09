@@ -1,0 +1,5 @@
+target,criterion,k,accuracy,kappa,modal_predictor,predictor_stability
+Perlidae,AIC,1,0.556,0.25,Turbiedad,17/18
+Perlidae,Spearman,1,0.556,0.25,Turbiedad,18/18
+Helicopsychidae,AIC,1,0.556,0.111,Caudal,17/18
+Helicopsychidae,Spearman,1,0.556,0.111,Caudal,17/18
