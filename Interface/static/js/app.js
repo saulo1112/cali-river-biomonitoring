@@ -6,15 +6,21 @@
    =========================================================================== */
 
 const CARD_STYLE = {
-  svr_bmwp:           { icon: "💧", sub: "Índice BMWP/Col · valor numérico + clase de calidad" },
-  fuzzy_perlidae:     { icon: "🐛", sub: "Presencia / ausencia del macroinvertebrado Perlidae" },
-  lr_helicopsychidae: { icon: "🪰", sub: "Presencia / ausencia del macroinvertebrado Helicopsychidae" },
+  svr_bmwp:           { icon: "💧", sub: "BMWP/Col index · numerical value + quality class" },
+  fuzzy_perlidae:     { icon: "🐛", sub: "Presence / absence of the macroinvertebrate Perlidae" },
+  lr_helicopsychidae: { icon: "🪰", sub: "Presence / absence of the macroinvertebrate Helicopsychidae" },
 };
 
 const CLASS_TO_CSS = {
-  "Muy crítica": "q-muy-critica", "Crítica": "q-critica", "Dudosa": "q-dudosa",
-  "Aceptable": "q-aceptable", "Buena": "q-buena",
-  "Presencia": "q-presencia", "Ausencia": "q-ausencia",
+  "Very Critical": "q-muy-critica", "Critical": "q-critica", "Doubtful": "q-dudosa",
+  "Acceptable": "q-aceptable", "Good": "q-buena",
+  "Present": "q-presencia", "Absent": "q-ausencia",
+};
+
+const PRED_EN = {
+  Dureza: "Hardness", Turbiedad: "Turbidity", DBO5: "BOD5",
+  Caudal: "Flow rate", OD: "DO", Magnesio: "Magnesium",
+  COT: "TOC", SDT: "TDS",
 };
 
 let MODELS = {};
@@ -45,7 +51,7 @@ async function boot() {
     const res = await fetch("/api/models");
     MODELS = await res.json();
   } catch (e) {
-    el("modelCards").innerHTML = errorBox("No se pudo conectar con el servidor.");
+    el("modelCards").innerHTML = errorBox("Could not connect to the server.");
     return;
   }
   renderCards();
@@ -63,7 +69,7 @@ function renderCards() {
       const k = meta.metrics && meta.metrics.kappa != null ? meta.metrics.kappa : "—";
       card.innerHTML = `
         <span class="icon">${style.icon}</span>
-        <div class="card-title">${meta.target}</div>
+        <div class="card-title">${meta.display_name || meta.target}</div>
         <div class="card-sub">${style.sub}</div>
       `;
       card.addEventListener("click", () => selectModel(name, card));
@@ -71,7 +77,7 @@ function renderCards() {
       card.innerHTML = `
         <span class="icon">${style.icon}</span>
         <div class="card-title">${name}</div>
-        <div class="card-sub">Modelo no disponible · ejecuta el notebook primero</div>`;
+        <div class="card-sub">Model not available · run the notebook first</div>`;
     }
     host.appendChild(card);
   }
@@ -85,8 +91,7 @@ function selectModel(name, card) {
 
   const meta = MODELS[name];
   el("inputNote").textContent =
-    `Modelo: ${meta.display_name}. Ajusta los ` +
-    `predictores y pulsa "Predecir".`;
+    `Model: ${meta.display_name}. Adjust the predictors and click "Predict".`;
 
   const host = el("inputFields");
   host.innerHTML = "";
@@ -96,7 +101,7 @@ function selectModel(name, card) {
   el("inputPanel").classList.remove("hidden");
   el("resultPanel").classList.add("hidden");
   el("modelStamp").textContent =
-    `${meta.display_name} · validación Nested LOOCV`;
+    `${meta.display_name} · Nested LOOCV validation`;
   el("inputPanel").scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
@@ -110,7 +115,7 @@ function buildField(p, meta) {
   wrap.className = "field";
   wrap.innerHTML = `
     <label>
-      <span class="f-name">${p} <span class="f-unit">${unit}</span></span>
+      <span class="f-name">${PRED_EN[p] || p} <span class="f-unit">${unit}</span></span>
       <span class="f-value" data-for="${p}">${start}</span>
     </label>
     <div class="slider-row">
@@ -174,10 +179,14 @@ async function predict() {
 
 function renderResult(data, meta) {
   const cssClass = CLASS_TO_CSS[data.class] || "q-aceptable";
-  let html = `<div class="result-label">Resultado · ${data.display_name}</div>`;
+  let html = `<div class="result-label">Result · ${data.display_name}</div>`;
 
   if (data.value !== undefined) {
     // BMWP regression: numerical value + quality class
+    const intervalHtml = data.interval
+      ? `<div class="result-interval">Estimated range: ${data.interval[0]} – ${data.interval[1]}</div>
+         <div class="result-caption">Based on validated model error; treat the class label as approximate.</div>`
+      : "";
     html += `
       <div class="result-main">
         <div class="result-value ${cssClass}">${data.value}</div>
@@ -185,35 +194,15 @@ function renderResult(data, meta) {
           <span class="swatch"></span>${data.class}
         </div>
       </div>
-      <div class="result-meta">
-        <span>Escala BMWP/Col <b>0 – 120</b></span>
-        <span>MAE validación <b>±${meta.metrics.mae}</b> pts</span>
-        <span>κ <b>${meta.metrics.kappa}</b></span>
-      </div>
-      <div class="result-note">
-        Predicción puntual del índice BMWP/Col y su clase de calidad (Roldán).
-        El R² de validación es bajo (${meta.metrics.r2}); interpretar como
-        estimación orientativa, no como medición exacta.
-      </div>`;
+      ${intervalHtml}`;
   } else {
     // Binary presence/absence
-    const pct = Math.round((data.score ?? 0) * 100);
     const icon = data.positive ? "✓" : "○";
     html += `
       <div class="result-main">
         <div class="result-class-chip ${cssClass}" style="font-size:1.4rem">
           <span class="swatch"></span>${icon} ${data.class}
         </div>
-      </div>
-      <div class="score-bar"><div class="score-fill" style="width:0%"></div></div>
-      <div class="result-meta">
-        <span>Confianza del modelo <b>${pct}%</b></span>
-        <span>κ <b>${meta.metrics.kappa}</b> · F1 <b>${meta.metrics.f1}</b></span>
-      </div>
-      <div class="result-note">
-        ${data.positive
-          ? "Condiciones fisicoquímicas compatibles con la presencia del taxón."
-          : "Condiciones poco favorables para la presencia del taxón."}
       </div>`;
   }
 
@@ -222,12 +211,6 @@ function renderResult(data, meta) {
   // re-trigger reveal animation
   inner.style.animation = "none"; void inner.offsetWidth; inner.style.animation = "";
   el("resultPanel").classList.remove("hidden");
-
-  const fill = inner.querySelector(".score-fill");
-  if (fill) {
-    const pct = Math.round((data.score ?? 0) * 100);
-    requestAnimationFrame(() => { fill.style.width = `${pct}%`; });
-  }
   el("resultPanel").scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 

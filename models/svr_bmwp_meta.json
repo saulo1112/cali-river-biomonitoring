@@ -1,7 +1,7 @@
 {
   "model_type": "SVR",
   "target": "BMWP",
-  "display_name": "ε-SVR — Índice BMWP/Col",
+  "display_name": "ε-SVR — BMWP/Col Index",
   "predictors": [
     "Dureza"
   ],
@@ -32,10 +32,10 @@
     "class"
   ],
   "classes": {
-    "0-15": "Muy crítica",
-    "16-35": "Crítica",
-    "36-60": "Dudosa",
-    "61-100": "Aceptable",
-    "101-120": "Buena"
+    "0-15": "Very Critical",
+    "16-35": "Critical",
+    "36-60": "Doubtful",
+    "61-100": "Acceptable",
+    "101-120": "Good"
   }
 }

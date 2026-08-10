@@ -1,7 +1,7 @@
 {
   "model_type": "LogisticRegression",
   "target": "Helicopsychidae",
-  "display_name": "Regresión logística — Helicopsychidae",
+  "display_name": "Logistic Regression — Helicopsychidae",
   "predictors": [
     "Caudal"
   ],
@@ -23,7 +23,7 @@
     "class"
   ],
   "classes": {
-    "0": "Ausencia",
-    "1": "Presencia"
+    "0": "Absent",
+    "1": "Present"
   }
 }

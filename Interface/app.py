@@ -59,7 +59,7 @@ def classify_bmwp(value, classes):
         lo, hi = (float(x) for x in rng.split("-"))
         if lo <= value <= hi:
             return label
-    return "Fuera de rango"
+    return "Out of range"
 
 
 def predict_fuzzy(control_system, meta, inputs):
@@ -113,7 +113,7 @@ def api_predict():
     # Validate inputs
     missing = [p for p in meta["predictors"] if p not in inputs or inputs[p] in ("", None)]
     if missing:
-        return jsonify({"error": f"Faltan valores para: {', '.join(missing)}"}), 400
+        return jsonify({"error": f"Missing values for: {', '.join(missing)}"}), 400
 
     result = {"target": meta["target"], "display_name": meta.get("display_name", meta["target"])}
 
@@ -135,7 +135,9 @@ def api_predict():
         X = np.array([[float(inputs[p]) for p in meta["predictors"]]])
         raw = float(model.predict(X)[0])
         raw = max(0.0, min(120.0, raw))  # clamp to BMWP/Col scale
+        mae = float(meta.get("metrics", {}).get("mae", 0))
         result["value"] = round(raw, 1)
+        result["interval"] = [round(max(0.0, raw - mae), 1), round(min(120.0, raw + mae), 1)]
         result["class"] = classify_bmwp(raw, meta["classes"])
 
     return jsonify(result)
