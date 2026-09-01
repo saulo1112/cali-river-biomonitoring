@@ -1,205 +1,259 @@
 # Cali River Biomonitoring — Ecological Water Quality Modelling
 
-Modelling of the hydrobiological water quality of the **Cali River** using aquatic
-macroinvertebrates as bioindicators. This repository contains a cleaned and
-restructured set of Jupyter notebooks from an undergraduate thesis, comparing
-several modelling techniques (fuzzy logic, logistic regression, classification
-trees, support vector regression, and negative binomial regression) for predicting
-the **BMWP/Col** water quality index and the presence of two pollution-sensitive
-bioindicator taxa (*Perlidae* and *Helicopsychidae*).
+Machine learning models for predicting the hydrobiological water quality of the
+**Cali River** (Valle del Cauca, Colombia) from routine physicochemical
+measurements, using aquatic macroinvertebrates as bioindicators. This repository
+holds the complete analysis behind the article *"A comparative machine learning
+framework for water quality and habitat suitability modelling under severe data
+scarcity in the Cali River, Colombia"* (Quiñones-Góngora & Holguín-González,
+Universidad Autónoma de Occidente) — five modelling techniques, one validation
+protocol, three prediction targets, evaluated on 18 records from 9 monitoring
+stations.
+
+**The analysis is finished.** Every notebook has been run to completion, the
+three winning models are exported and served through a working prediction
+interface, and the results below are the ones reported in the manuscript
+(`docs/`).
+
+## Table of contents
+
+- [Study context](#study-context)
+- [Data](#data)
+- [What was predicted](#what-was-predicted)
+- [Why "nested" cross-validation](#why-nested-cross-validation)
+- [Results](#results)
+- [What the models are (and are not) good for](#what-the-models-are-and-are-not-good-for)
+- [Notebooks](#notebooks)
+- [Repository structure](#repository-structure)
+- [Prediction interface](#prediction-interface)
+- [Reproducing the analysis](#reproducing-the-analysis)
+- [Citation](#citation)
+
+---
 
 ## Study context
 
-The Cali River is an urban tropical river in **Valle del Cauca, Colombia**. As it
-flows from its headwaters into the city of Cali, it is subjected to increasing
-anthropogenic pressure, reflected in deteriorating physicochemical conditions and a
-simplified benthic macroinvertebrate community. This work explores whether the
-water quality of the river — summarised through the BMWP/Col index and through the
-presence of pollution-sensitive taxa — can be predicted from routine physicochemical
-measurements under severe data scarcity (n = 14–18 sampling stations).
+The Cali River is an urban tropical river in Valle del Cauca, Colombia. As it
+descends from the Farallones de Cali into the city, it comes under increasing
+pressure from human activity, visible in both its physicochemical condition and
+in a simplified benthic macroinvertebrate community. This project asks a
+practical question on behalf of a resource-constrained monitoring programme:
+**given only routine physicochemical measurements, and only a handful of
+monitoring stations, can water quality and the presence of pollution-sensitive
+species be predicted well enough to be useful?**
+
+The honest answer, established by measurement rather than assumption, differs
+by target — see [Results](#results).
 
 ## Data
 
-- **Source:** CVC — *Corporación Autónoma Regional del Valle del Cauca*.
-- **Sample size:** n ≈ 14–18 observations depending on target and outlier removal.
-  This is a hard constraint that shapes every modelling decision and must be kept in
-  mind when reading any performance metric.
-- **Two datasets** (placed in `data/`, not version-controlled):
+- **Source:** Corporación Autónoma Regional del Valle del Cauca (CVC), collected
+  under the Cali River Water Resource Management Plan (2021–2022).
+- **Sample size: n = 18 records from 9 monitoring stations**, each sampled once
+  in the dry season and once in the rainy season. This is the hard constraint
+  that shapes every methodological decision in this project — see
+  [Why "nested" cross-validation](#why-nested-cross-validation).
+- **Two datasets** go in `data/` (not version-controlled; request from the
+  authors or CVC):
   - `DB - Macroinvertebrados.xlsx` — physicochemical predictors plus binary
     presence/absence of `Perlidae` and `Trichoptera` (Helicopsychidae).
   - `Database - BMWP.xlsx` — physicochemical predictors plus the continuous
-    `BMWP` index per sampling station.
-- **Predictors used** (original column names preserved): `OD` (dissolved oxygen),
-  `DBO5` (BOD₅), `SDT` (TDS), `Turbiedad` (turbidity), `Conductividad`
-  (conductivity), `COT` (TOC), `Dureza` (total hardness), `Magnesio` (magnesium),
-  `Caudal` (flow rate).
+    `BMWP` index per station.
+- **Candidate predictors** (original column names, all directly measured
+  quantities — no derived or composite variables are used): `OD` (dissolved
+  oxygen), `DBO5` (BOD₅), `SDT` (total dissolved solids), `Turbiedad`
+  (turbidity), `Conductividad` (conductivity), `COT` (total organic carbon),
+  `Dureza` (total hardness), `Magnesio` (magnesium), `Caudal` (flow rate).
 
-## Bioindicators and target variables
+## What was predicted
 
-- **Bioindicators:** *Trichoptera: Helicopsychidae* and *Plecoptera: Perlidae* —
-  sensitive taxa associated with good-to-acceptable water quality.
-- **Target index:** **BMWP/Col** (Biological Monitoring Working Party, adapted for
-  Colombia), with the standard Roldán quality classes:
+- **Two bioindicator taxa** (binary presence/absence): *Plecoptera: Perlidae*
+  (present in 6 of 18 records) and *Trichoptera: Helicopsychidae* (present in
+  3 of 18) — pollution-sensitive families selected for their high BMWP/Col
+  sensitivity scores.
+- **The BMWP/Col index** (Biological Monitoring Working Party, Colombian
+  adaptation), treated two ways: as a continuous 0–120 value, and as the five
+  ordered Roldán quality classes:
 
   | Range | Class |
   |-------|-------|
-  | 0 – 15 | Muy crítica |
-  | 16 – 35 | Crítica |
-  | 36 – 60 | Dudosa |
-  | 61 – 100 | Aceptable |
-  | 101 – 120 | Buena |
+  | 0 – 15 | Very Critical |
+  | 16 – 35 | Critical |
+  | 36 – 60 | Doubtful |
+  | 61 – 100 | Acceptable |
+  | 101 – 120 | Good |
 
----
+Five techniques were compared under one shared protocol: Mamdani **fuzzy
+inference**, **logistic regression**, **classification trees**, **negative
+binomial regression**, and **ε-support vector regression (ε-SVR)**.
 
-## Key findings
+## Why "nested" cross-validation
 
-All winning models were validated under **Nested Leave-One-Out Cross-Validation
-(Nested LOOCV)**, which performs predictor selection inside each training fold to
-prevent data leakage.
+With only 18 records, the biggest risk to an honest result is not a weak model —
+it's a validation shortcut. If a predictor is chosen by looking at *all* 18
+records, and the model is then tested on those same records, the test is no
+longer a fair one: the model has already been shaped by the very data used to
+judge it.
 
-### BMWP/Col numerical prediction — ε-SVR (RBF kernel)
+**Nested leave-one-out cross-validation (nested LOOCV)** avoids this. For each
+of the 18 stations in turn, that one record is set aside, and *every*
+data-dependent decision — which predictors to use, how to shape a fuzzy rule,
+which hyperparameters to tune — is made using only the other 17 records. Only
+then is the held-out record predicted. This is repeated 18 times so every
+station gets exactly one honest, out-of-sample prediction.
 
-The best-performing BMWP regression model is an ε-SVR with an RBF kernel and a
-single predictor, **Dureza** (total hardness, mg/L CaCO₃).
+This project also measured what the shortcut would have cost: re-running the
+same models with predictors chosen once on all 18 records (instead of inside
+each fold) inflated Cohen's κ by up to **0.214** in five of six matched
+comparisons — a difference large enough to change which technique looks best.
+That gap is reported in the manuscript as a result in its own right, not just
+a methodological footnote.
+
+## Results
+
+All headline numbers below come from nested LOOCV — the honest, out-of-sample
+estimate — and match the manuscript exactly.
+
+### BMWP/Col — ε-SVR (RBF kernel)
+
+The strongest BMWP model is an ε-SVR with a single predictor, **total hardness**
+(`Dureza`, mg/L CaCO₃).
 
 | Metric | Value |
 |--------|-------|
-| Nested LOOCV MAE | ±23.7 BMWP points |
-| RMSE | 31.6 |
-| Spearman ρ | 0.43 |
+| MAE | 23.71 BMWP points |
+| RMSE | 31.60 |
 | R² | −0.028 |
-| Class accuracy (κ) | 0.556 (κ = 0.258) |
+| Spearman ρₛ | 0.430 (p = 0.075) |
+| 5-class accuracy | 55.6 % (κ = 0.258) |
 
-**Interpretation.** R² is near zero because the regression problem is poorly
-determined with n = 18 and one predictor. However, the Spearman correlation
-(ρ = 0.43) indicates a moderate monotonic relationship that linear R² misses,
-and the absolute MAE of ~24 points is meaningful on the 0–120 BMWP scale.
-These results are best read as an ordinal signal — the model captures the
-*direction* of quality degradation rather than its exact value.
+**How to read this.** R² near zero means the model does **not** reproduce the
+exact numerical value of BMWP/Col — with 18 records and one predictor, that
+problem is essentially unsolvable, and no other technique tested did better
+(negative binomial regression scored R² = −0.270). What the model *does*
+recover is the **ordering** of stations along the pollution gradient
+(ρₛ = 0.430): it can rank sites from most to least degraded well enough to help
+decide where a full biological survey is worth the cost, even though it cannot
+be trusted to output a precise index value. Five-class BMWP/Col prediction
+itself is structurally out of reach at this sample size — see
+[Limitations](#what-the-models-are-and-are-not-good-for).
 
-**Under critical data scarcity, this is the most tractable approach** for BMWP
-numerical prediction: SVR with a radial kernel tolerates small samples better
-than deep neural networks or ensemble methods, AIC-guided predictor selection
-inside each fold prevents overfitting to the calibration set, and the nonlinear
-kernel recovers a signal that no parametric model achieved with these data.
-The model should be understood as a decision-support tool that flags likely
-quality class transitions, not as a substitute for in-field biological sampling.
+### Perlidae presence/absence — Fuzzy Mamdani inference (Approach C)
 
-### Perlidae presence/absence — Fuzzy Mamdani (Approach E, FCM membership)
-
-The redesigned Mamdani system with FCM-derived membership functions and three
-predictors — **Turbiedad, DBO5, SDT** — is the winning classifier for *Perlidae*.
+A fuzzy rule-based system with membership functions fitted per fold via Fuzzy
+C-Means, using three predictors: **turbidity, BOD₅, and total dissolved
+solids**.
 
 | Metric | Value |
 |--------|-------|
-| Nested LOOCV accuracy | 72.2 % |
+| Accuracy | 72.2 % |
 | F1 | 0.768 |
 | Cohen's κ | 0.516 |
 
-A κ of 0.516 indicates moderate-to-substantial agreement beyond chance — the
-strongest result across all three targets. The use of FCM membership functions
-(fitted per fold inside Nested LOOCV) instead of hand-tuned triangular functions
-was the critical design choice.
+This is the strongest result across all three targets, and the most credible
+one: two other, unrelated techniques (logistic regression and classification
+trees) independently converge on κ between 0.483 and 0.500 using the exact
+same three predictors, selected unanimously in all 18 cross-validation folds.
+Agreement of that kind across three different model families is unlikely to be
+a coincidence at this sample size.
 
 ### Helicopsychidae presence/absence — Logistic regression
 
-A balanced-class logistic regression with **Caudal** (flow rate, m³/s) as the
-sole predictor.
+A single-predictor logistic regression on **flow rate** (`Caudal`, m³/s), with
+class-balanced weighting.
 
 | Metric | Value |
 |--------|-------|
-| Nested LOOCV accuracy | 55.6 % |
+| Accuracy | 55.6 % |
 | F1 | 0.500 |
 | Cohen's κ | 0.111 |
 
-**Interpretation.** κ = 0.111 is slight agreement — the model is only marginally
-better than the balanced-chance baseline. *Helicopsychidae* presence shows weak,
-possibly nonlinear dependence on the available physicochemical variables at this
-sample size. The model is nonetheless useful as a lower-bound reference: it
-establishes that flow rate carries detectable information for this taxon, but
-that information alone is insufficient for reliable prediction.
+κ = 0.111 is only *slight* agreement — this is the weakest of the three
+results, and is reported as the best *available* answer for a taxon present in
+just 3 of 18 records, not as an adequate one. A classification tree on the same
+data reaches 77.8 % accuracy but κ = −0.091: it has simply learned to always
+predict "absent", which happens to be right most of the time under this
+imbalance. This contrast — high accuracy with negative κ — is the clearest
+illustration in the whole study of why **Cohen's κ, not accuracy, is the
+primary metric** whenever classes are imbalanced.
 
-### Overall model comparison
+### Overall comparison
 
-| Target | Winning model | Predictor(s) | Accuracy | κ |
-|--------|--------------|--------------|----------|---|
-| BMWP (numerical + class) | ε-SVR (RBF) | Dureza | 55.6 % | 0.258 |
-| Perlidae (presence/absence) | Fuzzy Mamdani (FCM) | Turbiedad, DBO5, SDT | 72.2 % | 0.516 |
-| Helicopsychidae (presence/absence) | Logistic regression | Caudal | 55.6 % | 0.111 |
+| Target | Winning technique | Predictor(s) | Accuracy | κ |
+|--------|-------------------|--------------|----------|---|
+| BMWP/Col (numerical + class) | ε-SVR (RBF) | Hardness | 55.6 % | 0.258 |
+| Perlidae (presence/absence) | Fuzzy Mamdani | Turbidity, BOD₅, TDS | 72.2 % | 0.516 |
+| Helicopsychidae (presence/absence) | Logistic regression | Flow rate | 55.6 % | 0.111 |
 
-**Hardness (Dureza) and flow rate (Caudal) emerged as the most informative
-single predictors** for their respective targets across all validation folds —
-a finding consistent with ecological expectations: hardness correlates with
-catchment geology and moderate upstream dilution; flow influences sediment
-dynamics and substrate quality that bioindicators depend on.
+No single technique won across every target — matching the model to the
+problem mattered more than picking a "best" algorithm. Hardness and flow rate
+were the two most consistently informative predictors across every technique
+that used them.
 
----
+## What the models are (and are not) good for
 
-## Possible applications and limitations
+**Reasonable uses:**
+- **Screening / triage.** Flagging whether a routine physicochemical sample is
+  consistent with critical or acceptable water quality, to help prioritise
+  which stations warrant a full (expensive, slow) biological survey next.
+- **Habitat-suitability signal for *Perlidae*.** κ = 0.516 with three
+  independently converging techniques is a credible, moderate-agreement signal
+  for conservation or restoration prioritisation.
+- **Identifying where monitoring effort pays off.** The predictors that
+  survived nested selection — hardness, flow, BOD₅, turbidity, total dissolved
+  solids — are the variables future sampling campaigns should prioritise
+  measuring consistently.
+- **A transferable protocol**, not just a set of models. The nested LOOCV
+  procedure used here requires no specialised infrastructure and can be applied
+  to any small-n river-monitoring dataset by substituting the response and
+  predictor columns.
 
-### Possible applications
+**Known limits — read before using the models for anything operational:**
+- **n = 18 is not n = 18 independent stations.** They are 9 stations sampled
+  twice; the number of truly independent units is 9. Reported metrics should be
+  read as upper bounds, not unbiased estimates.
+- **Five-class BMWP/Col prediction is not achievable at this sample size.**
+  With only one "Good"-class station, no model can learn a class it has never
+  seen; the models tested predict at most 3–4 of the 5 classes. Use the
+  numerical estimate and its ±23.7-point band, not a hard class label, for
+  anything downstream.
+- **No spatial or temporal transfer.** These models are calibrated on one
+  river, over one year. Do not apply them to a different basin, season, or
+  year without recalibration.
+- **A single reclassified record can move κ by more than 0.10** at this sample
+  size. Comparative statements in the manuscript are directional, not
+  statistically established — no confidence intervals are reported, because at
+  n = 18 they would be uninformatively wide.
+- **The Perlidae logistic model uses 3 predictors on 6 presence events**
+  (EPV = 2.0, well below the conventional floor of 5–10); its coefficients are
+  not interpretable as effect sizes.
 
-1. **Rapid decision support under data scarcity.** When full biological surveys
-   are infeasible — due to cost, timing, or access — the interface can flag whether
-   a routine water-quality sample is consistent with critical or acceptable BMWP
-   conditions, supporting triage decisions by environmental managers.
-
-2. **Ordinal quality screening (BMWP model).** Even with a near-zero R², the SVR
-   output correlates monotonically with true BMWP (ρ = 0.43). For stations where
-   the physicochemical data place Dureza in clearly high or low ranges, the model
-   provides a useful orientation about the probable quality class.
-
-3. **Bioindicator early warning (Perlidae model).** With κ = 0.516 and F1 = 0.768,
-   the Perlidae fuzzy model can credibly signal suitable habitat conditions for this
-   pollution-sensitive taxon — useful for conservation or restoration prioritisation.
-
-4. **Baseline for future data collection.** The models identify the most informative
-   predictors per target (Dureza, Turbiedad, DBO5, SDT, Caudal). Future monitoring
-   campaigns can prioritise these measurements to improve model performance as n grows.
-
-5. **Methodological template.** Nested LOOCV with within-fold predictor selection is
-   a rigorous protocol for tiny ecological datasets. The code can be adapted to other
-   small-n river biomonitoring datasets in the Andean region.
-
-### Critical limitations
-
-- **Very small sample size** (n = 14–18). Metrics have wide uncertainty intervals;
-  a single observation can shift a κ value by > 0.1. Results are indicative, not
-  conclusive.
-- **No temporal or spatial transfer.** Models are calibrated on a single river under
-  the available CVC sampling campaigns; they should not be applied to other systems
-  without recalibration.
-- **BMWP regression is weakly determined.** R² ≈ 0 means the SVR does not reliably
-  predict the absolute numerical value of BMWP. Use the class output and the ±24-pt
-  MAE band as bounds, not the point estimate.
-- **In-sample fuzzy evaluation (original notebooks 01a–01c).** The original rule
-  bases are derived from and evaluated on the same data, so their metrics reflect
-  internal fit only. The redesigned system (`01b_fuzzy_final`) with Nested LOOCV
-  supersedes them for any publication use.
-- **Outlier removal** uses a tolerant IQR rule (2.5× upper bound) to retain
-  variability — a pragmatic choice driven by sample size, not a standard procedure.
+The full discussion of these limitations — eight in total — is in Section 5 of
+the manuscript.
 
 ---
 
 ## Notebooks
 
-| Notebook | Technique | Target | Validation |
-|----------|-----------|--------|------------|
-| `01_fuzzy_logic/01a_fuzzy_BMWP` | Fuzzy logic (original) | BMWP class | In-sample* |
-| `01_fuzzy_logic/01b_fuzzy_Perlidae` | Fuzzy logic (original) | Perlidae | In-sample* |
-| `01_fuzzy_logic/01c_fuzzy_Helicopsychidae` | Fuzzy logic (original) | Helicopsychidae | In-sample* |
-| `01_fuzzy_logic/01d_fuzzy_LOOCV` | Fuzzy logic baseline | All three | LOOCV |
-| `01_fuzzy_logic/01e_fuzzy_redesign_comparison` | 8 redesign approaches compared | All three | LOOCV |
-| **`01_fuzzy_logic/01b_fuzzy_final`** | **Fuzzy Mamdani (FCM) — FINAL** | **All three** | **Nested LOOCV** |
-| `02_logistic_regression` | Logistic regression | Perlidae & Helicopsychidae | Nested LOOCV |
-| `03_classification_trees/03b_classification_trees_LOOCV` | Classification trees | Perlidae & Helicopsychidae | LOOCV |
-| `04_negative_binomial` | Negative binomial GLM | BMWP | Nested LOOCV |
-| **`05_svr_bmwp/05_svr_bmwp`** | **ε-SVR (RBF) — FINAL** | **BMWP** | **Nested LOOCV** |
-| `06_bmwp_simulation` | Spearman correlation | BMWP | In-sample + LOOCV |
+Each notebook documents its own methodology and is independently reproducible
+(relative paths, fixed random seeds). The three marked **FINAL** are the ones
+whose output is exported to `models/` and served by the prediction interface.
 
-*In-sample: not evidence of out-of-sample generalisation.
+| Notebook | Technique | Target(s) | Role |
+|----------|-----------|------------|------|
+| `01_fuzzy_logic/01a_fuzzy_design_comparison.ipynb` | Fuzzy inference | BMWP, Perlidae, Helicopsychidae | Compares 4 leakage-controlled fuzzy configurations (A–D) to select the antecedent design |
+| `01_fuzzy_logic/01b_fuzzy_final.ipynb` | Fuzzy Mamdani (FCM) | BMWP, Perlidae, Helicopsychidae | **FINAL** — winning model for **Perlidae** |
+| `02_logistic_regression/02_logistic_regression.ipynb` | Logistic regression | Perlidae, Helicopsychidae | **FINAL** — winning model for **Helicopsychidae** |
+| `03_classification_trees/03_classification_trees.ipynb` | CART (depth 3) | Perlidae, Helicopsychidae | Comparison technique — modal-fold trees shown for interpretation |
+| `04_negative_binomial/04_negative_binomial_regression.ipynb` | Negative binomial GLM | BMWP | Comparison technique for BMWP numerical prediction |
+| `05_svr_bmwp/05_svr_bmwp.ipynb` | ε-SVR (RBF kernel) | BMWP | **FINAL** — winning model for **BMWP/Col** |
+| `06_bmwp_simulation/05_bmwp_spearman_validation.ipynb` | Spearman rank correlation | BMWP | Supplementary exploratory notebook; its in-sample comparison is **not** part of the manuscript's reported results |
 
----
+All five comparative techniques were evaluated under the same nested LOOCV
+protocol described [above](#why-nested-cross-validation); the specific
+predictor-selection criterion used per technique (Spearman rank screening,
+exhaustive AIC, or the fuzzy hybrid of both) is documented in each notebook and
+in Section 2.5 of the manuscript.
 
 ## Repository structure
 
@@ -209,74 +263,70 @@ cali-river-biomonitoring/
 ├── requirements.txt
 ├── .gitignore
 │
-├── data/                         # Input .xlsx datasets (not version-controlled)
+├── data/                              # Input .xlsx datasets (not version-controlled)
 │   ├── DB - Macroinvertebrados.xlsx
 │   └── Database - BMWP.xlsx
 │
 ├── notebooks/
 │   ├── 01_fuzzy_logic/
-│   │   ├── 01a_fuzzy_BMWP.ipynb
-│   │   ├── 01b_fuzzy_final.ipynb          ← WINNING MODEL: Perlidae (FCM fuzzy)
-│   │   ├── 01c_fuzzy_Helicopsychidae.ipynb
-│   │   ├── 01d_fuzzy_LOOCV.ipynb
-│   │   └── 01e_fuzzy_redesign_comparison.ipynb
+│   │   ├── 01a_fuzzy_design_comparison.ipynb
+│   │   └── 01b_fuzzy_final.ipynb          ← FINAL: Perlidae (fuzzy Mamdani)
 │   ├── 02_logistic_regression/
-│   │   └── 02_logistic_regression.ipynb   ← WINNING MODEL: Helicopsychidae (LR)
+│   │   └── 02_logistic_regression.ipynb   ← FINAL: Helicopsychidae (logistic)
 │   ├── 03_classification_trees/
+│   │   └── 03_classification_trees.ipynb
 │   ├── 04_negative_binomial/
+│   │   └── 04_negative_binomial_regression.ipynb
 │   ├── 05_svr_bmwp/
-│   │   └── 05_svr_bmwp.ipynb              ← WINNING MODEL: BMWP (ε-SVR)
+│   │   └── 05_svr_bmwp.ipynb               ← FINAL: BMWP/Col (ε-SVR)
 │   └── 06_bmwp_simulation/
+│       └── 05_bmwp_spearman_validation.ipynb   (supplementary)
 │
-├── models/                       # Serialised models (generated by notebooks)
-│   ├── svr_bmwp.pkl              # Pipeline(StandardScaler + SVR RBF)
-│   ├── svr_bmwp_meta.json        # Predictor ranges, metrics, BMWP class thresholds
-│   ├── fuzzy_perlidae.pkl        # skfuzzy ControlSystem (Mamdani, FCM MFs)
-│   ├── fuzzy_perlidae_meta.json
-│   ├── lr_helicopsychidae.pkl    # Pipeline(StandardScaler + LogisticRegression)
-│   └── lr_helicopsychidae_meta.json
+├── models/                             # Serialised models (regenerated by the notebooks)
+│   ├── svr_bmwp.pkl               + svr_bmwp_meta.json
+│   ├── fuzzy_perlidae.pkl         + fuzzy_perlidae_meta.json
+│   └── lr_helicopsychidae.pkl     + lr_helicopsychidae_meta.json
 │
-├── Interface/                    # Prediction web interface (Flask + HTML/CSS/JS)
-│   ├── app.py                    # Flask backend: auto-reloads .pkl on mtime change
-│   ├── index.html                # Single-page app (liquid glass design)
+├── outputs/                            # Generated CSVs and diagnostic plots
+│   └── figures/article/                # Publication-ready figures (Figures 2–11)
+│
+├── Interface/                          # Prediction web app (Flask + HTML/CSS/JS)
+│   ├── app.py                          # Flask backend — auto-reloads .pkl on change
+│   ├── index.html
 │   ├── requirements.txt
 │   └── static/
-│       ├── css/style.css         # Glassmorphism, animated waves, BMWP colour scale
-│       └── js/app.js             # Dynamic sliders, prediction fetch, result reveal
+│       ├── css/style.css
+│       └── js/app.js
 │
-├── outputs/                      # Generated artefacts (CSVs, validation tables)
-└── figures/                      # Exported plots
+└── docs/                                # Manuscript and article-figure package
 ```
 
-The files in `models/` are generated by running the final cell (*"Model Export for
-the Interface"*) in each of the three winning notebooks. Re-running a notebook
-automatically updates the `.pkl`; the Flask server detects the change on the next
-prediction request and reloads the model without restarting.
-
----
+`models/` is generated, not hand-written: running the final export cell in each
+of the three FINAL notebooks (re)writes its `.pkl` + `_meta.json` pair. The
+Flask server watches the `.pkl` modification time and reloads automatically, so
+re-running a notebook is enough to update the live interface — no restart
+needed.
 
 ## Prediction interface
 
-A local web interface lets users input physicochemical measurements and obtain
-model predictions in real time.
+A local web app lets anyone enter physicochemical measurements and get a live
+prediction from the three exported models.
 
 ```bash
 pip install -r Interface/requirements.txt
 python Interface/app.py      # → http://localhost:5000
 ```
 
-The interface provides:
-- **Step 1** — select prediction target (BMWP index, Perlidae, or Helicopsychidae).
-- **Step 2** — adjust input sliders (ranges derived from the training data).
-- **Step 3** — animated result panel. BMWP shows the numerical estimate and the
-  Roldán quality class with a colour-coded label (red → green). Presence/absence
-  models show the class chip and a confidence bar.
+Three steps: pick a target (BMWP/Col index, *Perlidae*, or *Helicopsychidae*),
+adjust input sliders (ranges are bounded to the observed calibration data, so
+you can't silently extrapolate beyond it), and read the result — a numerical
+estimate plus Roldán class and uncertainty band for BMWP, or a presence/absence
+class for the two taxa. Reference links to family-level taxonomic pages are
+included for the two bioindicators.
 
----
+## Reproducing the analysis
 
-## How to run the notebooks
-
-1. Create and activate a virtual environment, then install dependencies:
+1. Create an environment and install dependencies:
 
    ```bash
    python -m venv .venv
@@ -285,24 +335,29 @@ The interface provides:
    pip install -r requirements.txt
    ```
 
-2. Place the two source datasets in `data/`:
+2. Request the two source datasets from CVC / the authors and place them in
+   `data/`:
    - `data/DB - Macroinvertebrados.xlsx`
    - `data/Database - BMWP.xlsx`
 
-3. Launch Jupyter and run the notebooks in order:
+3. Launch Jupyter and run any notebook — each reads its data with relative
+   paths (`../../data/...`) and writes its outputs to `../../outputs/`:
 
    ```bash
    jupyter lab
    ```
 
-   Each notebook reads its data with relative paths (`../../data/...`) and writes
-   plots to `figures/`. Run the final cell of each winning notebook to regenerate
-   the model files in `models/`.
-
----
+   Run the whole notebook top to bottom; the three FINAL notebooks end with a
+   "Model Export for the Interface" cell that (re)writes the corresponding file
+   in `models/`.
 
 ## Citation
 
-> Quiñónez, S. (2026). *Modelamiento ecológico de la calidad hidrobiológica del
-> río Cali mediante macroinvertebrados acuáticos como bioindicadores.*
-> Trabajo de grado. [Institución].
+> Quiñones-Góngora, S., & Holguín-González, J. E. (2026). *A comparative
+> machine learning framework for water quality and habitat suitability
+> modelling under severe data scarcity in the Cali River, Colombia.*
+> Universidad Autónoma de Occidente.
+
+Monitoring data were provided by the Corporación Autónoma Regional del Valle
+del Cauca (CVC) and are subject to that institution's data-sharing conditions.
+Analysis code and intermediate outputs are in this repository.

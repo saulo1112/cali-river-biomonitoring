@@ -6,9 +6,9 @@
    =========================================================================== */
 
 const CARD_STYLE = {
-  svr_bmwp:           { icon: "💧", sub: "BMWP/Col index · numerical value + quality class" },
-  fuzzy_perlidae:     { icon: "🐛", sub: "Presence / absence of the macroinvertebrate Perlidae" },
-  lr_helicopsychidae: { icon: "🪰", sub: "Presence / absence of the macroinvertebrate Helicopsychidae" },
+  svr_bmwp:           { title: "BMWP/Col Index",  sub: "Numerical value + quality class" },
+  fuzzy_perlidae:     { title: "Perlidae",         sub: "Presence / absence" },
+  lr_helicopsychidae: { title: "Helicopsychidae",  sub: "Presence / absence" },
 };
 
 const CLASS_TO_CSS = {
@@ -61,22 +61,19 @@ function renderCards() {
   const host = el("modelCards");
   host.innerHTML = "";
   for (const [name, meta] of Object.entries(MODELS)) {
-    const style = CARD_STYLE[name] || { icon: "🔬", sub: "" };
+    const style = CARD_STYLE[name] || { title: name, sub: "" };
     const card = document.createElement("div");
     card.className = "card" + (meta ? "" : " disabled");
     card.dataset.model = name;
     if (meta) {
-      const k = meta.metrics && meta.metrics.kappa != null ? meta.metrics.kappa : "—";
       card.innerHTML = `
-        <span class="icon">${style.icon}</span>
-        <div class="card-title">${meta.display_name || meta.target}</div>
+        <div class="card-title">${style.title || meta.display_name || meta.target}</div>
         <div class="card-sub">${style.sub}</div>
       `;
       card.addEventListener("click", () => selectModel(name, card));
     } else {
       card.innerHTML = `
-        <span class="icon">${style.icon}</span>
-        <div class="card-title">${name}</div>
+        <div class="card-title">${style.title || name}</div>
         <div class="card-sub">Model not available · run the notebook first</div>`;
     }
     host.appendChild(card);

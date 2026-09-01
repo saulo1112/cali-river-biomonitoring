@@ -250,6 +250,30 @@ input[type="range"]::-moz-range-thumb {
 .q-presencia   { color: var(--q-aceptable); }
 .q-ausencia    { color: var(--text-soft); }
 
+/* ---------- Reference link buttons --------------------------------------- */
+.ref-note {
+  margin-top: 0.9rem; max-width: 52ch; margin-left: auto; margin-right: auto;
+  color: var(--text-faint); font-size: 0.82rem; line-height: 1.5;
+}
+.ref-links {
+  display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+.ref-btn {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.48rem 1.1rem; border-radius: 100px; text-decoration: none;
+  font-size: 0.82rem; font-weight: 500; color: var(--text-soft);
+  background: var(--glass); border: 1px solid var(--glass-border);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  transition: background 0.3s var(--ease), color 0.3s var(--ease),
+              border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
+}
+.ref-btn:hover {
+  background: var(--glass-strong); border-color: var(--accent-water);
+  color: var(--accent-water); box-shadow: 0 4px 20px rgba(78, 205, 196, 0.2);
+}
+.ref-btn em { font-style: italic; }
+
 /* ---------- Footer & misc ------------------------------------------------ */
 .foot { text-align: center; color: var(--text-faint); font-size: 0.78rem; margin-top: 0.5rem; }
 .hidden { display: none !important; }

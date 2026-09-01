@@ -1,7 +1,7 @@
 {
   "model_type": "FuzzyMamdani",
   "target": "Perlidae",
-  "display_name": "Fuzzy Inference (Fuzzy C-Means, 3 predictors) — Perlidae",
+  "display_name": "Lógica difusa (Enfoque C) — Perlidae",
   "predictors": [
     "Turbiedad",
     "DBO5",
@@ -37,7 +37,7 @@
     "class"
   ],
   "classes": {
-    "0": "Absent",
-    "1": "Present"
+    "0": "Ausencia",
+    "1": "Presencia"
   }
 }
