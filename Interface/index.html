@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cali River Biomonitoring</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="stylesheet" href="/static/css/style.css" />
+  <meta name="description" content="In-browser prediction of the hydrobiological water quality of the Cali River." />
+  <link rel="stylesheet" href="static/css/style.css" />
 </head>
 <body>
   <!-- Ambient background: gradient + animated waves + floating bubbles -->
@@ -19,16 +19,22 @@
   </div>
 
   <main class="shell">
+    <!-- Language switch -->
+    <div class="lang-switch" role="group" data-i18n-aria="lang.label" aria-label="Language">
+      <button type="button" class="lang-btn" data-lang="es" lang="es" aria-pressed="false">ES</button>
+      <button type="button" class="lang-btn" data-lang="en" lang="en" aria-pressed="false">EN</button>
+    </div>
+
     <header class="hero">
       <div class="hero-badge">
-        <span class="dot"></span> Cali River · Biomonitoring
+        <span class="dot"></span> <span data-i18n="hero.badge">Cali River · Biomonitoring</span>
       </div>
-      <h1>Ecological Water Quality Prediction</h1>
-      <p class="subtitle">
-        Models validated with Nested LOOCV for the BMWP/Col index and the presence
+      <h1 data-i18n="hero.title">Ecological Water Quality Prediction</h1>
+      <p class="subtitle" data-i18n="hero.subtitle">
+        Models validated with nested LOOCV for the BMWP/Col index and the presence
         of bioindicator macroinvertebrates.
       </p>
-      <p class="ref-note">
+      <p class="ref-note" data-i18n="hero.refNote">
         For taxonomic reference images of the bioindicator families, consult the
         external resources below.
       </p>
@@ -56,7 +62,7 @@
     <section class="panel glass" aria-labelledby="step1">
       <div class="panel-head">
         <span class="step-num">1</span>
-        <h2 id="step1">What do you want to predict?</h2>
+        <h2 id="step1" data-i18n="step1.title">What do you want to predict?</h2>
       </div>
       <div class="cards" id="modelCards"><!-- injected by JS --></div>
     </section>
@@ -65,13 +71,13 @@
     <section class="panel glass hidden" id="inputPanel" aria-labelledby="step2">
       <div class="panel-head">
         <span class="step-num">2</span>
-        <h2 id="step2">Physicochemical Parameters</h2>
+        <h2 id="step2" data-i18n="step2.title">Physicochemical parameters</h2>
       </div>
       <p class="panel-note" id="inputNote"></p>
       <div class="inputs" id="inputFields"><!-- injected by JS --></div>
-      <button class="predict-btn" id="predictBtn">
-        <span>Predict</span>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+      <button class="predict-btn" id="predictBtn" type="button">
+        <span data-i18n="predict">Predict</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -84,10 +90,18 @@
     </section>
 
     <footer class="foot">
-      <span id="modelStamp"></span>
+      <p id="modelStamp"></p>
+      <p class="foot-disclaimer" data-i18n="foot.disclaimer"></p>
+      <p class="foot-links">
+        <a href="https://github.com/saulo1112/cali-river-biomonitoring" target="_blank"
+           rel="noopener noreferrer" data-i18n="foot.links">Code, notebooks and results</a>
+      </p>
+      <p data-i18n="foot.paper"></p>
     </footer>
   </main>
 
-  <script src="/static/js/app.js"></script>
+  <script src="static/js/engine.js"></script>
+  <script src="static/js/i18n.js"></script>
+  <script src="static/js/app.js"></script>
 </body>
 </html>

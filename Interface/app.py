@@ -1,9 +1,13 @@
 """
-Cali River Biomonitoring — prediction interface (Flask backend).
+Cali River Biomonitoring — local Flask server (reference implementation).
 
-Serves three deployed models exported from the analysis notebooks:
+The public interface (GitHub Pages) runs fully in the browser from
+static/data/models.json, see export_static_models.py and static/js/engine.js.
+This server serves the same page locally and additionally exposes the original
+Python models through a JSON API, which is the ground truth the browser engine
+is tested against:
     - svr_bmwp           : ε-SVR, BMWP/Col index (numerical + quality class)
-    - fuzzy_perlidae     : Fuzzy logic (Approach E), Perlidae presence/absence
+    - fuzzy_perlidae     : Fuzzy Mamdani (Approach C), Perlidae presence/absence
     - lr_helicopsychidae : Logistic regression, Helicopsychidae presence/absence
 
 Models live in ../models as <name>.pkl + <name>_meta.json. Each artefact is
@@ -68,7 +72,10 @@ def predict_fuzzy(control_system, meta, inputs):
     for p in meta["predictors"]:
         sim.input[p] = float(inputs[p])
     sim.compute()
-    crisp = float(sim.output[meta["consequent_name"]])
+    crisp = sim.output.get(meta["consequent_name"])
+    if crisp is None:  # no rule fires: the rule base is sparse
+        return None, None
+    crisp = float(crisp)
     present = crisp >= meta.get("threshold", 0.5)
     return crisp, present
 
@@ -119,6 +126,8 @@ def api_predict():
 
     if meta["model_type"] == "FuzzyMamdani":
         crisp, present = predict_fuzzy(model, meta, inputs)
+        if crisp is None:
+            return jsonify({"error": "No fuzzy rule fires for these inputs (outside rule-base coverage)."}), 422
         result["score"] = round(crisp, 3)
         result["class"] = meta["classes"]["1"] if present else meta["classes"]["0"]
         result["positive"] = bool(present)

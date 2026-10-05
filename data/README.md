@@ -13,8 +13,9 @@ here manually before running the notebooks.
 
 ## Source
 
-CVC — *Corporación Autónoma Regional del Valle del Cauca*. Cali River sampling
-campaigns. Approximately 14–18 observations per dataset.
+CVC — *Corporación Autónoma Regional del Valle del Cauca*, Cali River Water
+Resource Management Plan (2021–2022). The working dataset is 18 records from
+9 stations (one dry-season and one rainy-season sample each).
 
 ## Column reference (original names, kept verbatim in code)
 

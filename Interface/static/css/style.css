@@ -130,6 +130,7 @@ body {
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.9rem; }
 .card {
   position: relative; cursor: pointer; text-align: left;
+  font: inherit; color: inherit;
   padding: 1.2rem; border-radius: 18px;
   background: var(--glass); border: 1px solid var(--glass-border);
   transition: transform 0.4s var(--ease), background 0.4s var(--ease),
@@ -151,7 +152,7 @@ body {
   color: var(--accent-water); background: rgba(78,205,196,0.12);
   border: 1px solid rgba(78,205,196,0.25); padding: 0.18rem 0.5rem; border-radius: 100px;
 }
-.card.disabled { opacity: 0.4; pointer-events: none; }
+.card:focus-visible, .lang-btn:focus-visible { outline: 2px solid var(--accent-water); outline-offset: 2px; }
 
 /* ---------- Input sliders ------------------------------------------------ */
 .inputs { display: flex; flex-direction: column; gap: 1.5rem; }
@@ -275,7 +276,27 @@ input[type="range"]::-moz-range-thumb {
 .ref-btn em { font-style: italic; }
 
 /* ---------- Footer & misc ------------------------------------------------ */
-.foot { text-align: center; color: var(--text-faint); font-size: 0.78rem; margin-top: 0.5rem; }
+/* ---------- Language switch ---------------------------------------------- */
+.lang-switch {
+  align-self: flex-end; display: inline-flex; padding: 3px; border-radius: 100px;
+  background: var(--glass); border: 1px solid var(--glass-border);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  margin-bottom: -0.8rem;
+}
+.lang-btn {
+  font: inherit; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.05em;
+  color: var(--text-soft); background: transparent; border: 0; cursor: pointer;
+  padding: 0.3rem 0.8rem; border-radius: 100px;
+  transition: background 0.3s var(--ease), color 0.3s var(--ease);
+}
+.lang-btn:hover { color: var(--text); }
+.lang-btn.active { color: var(--bg-deep); background: linear-gradient(135deg, var(--accent-water), var(--accent-river)); }
+
+.foot { text-align: center; color: var(--text-faint); font-size: 0.78rem; margin-top: 0.5rem;
+  display: flex; flex-direction: column; gap: 0.5rem; line-height: 1.5; }
+.foot-disclaimer { max-width: 62ch; margin: 0 auto; }
+.foot a { color: var(--accent-water); text-decoration: none; }
+.foot a:hover { text-decoration: underline; }
 .hidden { display: none !important; }
 
 @media (max-width: 480px) {

@@ -1,0 +1,46 @@
+name: Deploy interface to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths: ["Interface/**", ".github/workflows/pages.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # The in-browser engine must reproduce the Python models before it ships.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Parity test (JS engine vs. Python reference predictions)
+        run: node Interface/tests/test_parity.js
+
+      - name: Assemble static site
+        run: |
+          mkdir _site
+          cp Interface/index.html _site/
+          cp -r Interface/static _site/static
+          touch _site/.nojekyll
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4
